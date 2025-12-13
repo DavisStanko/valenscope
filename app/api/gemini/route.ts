@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 const DAILY_LIMIT = 5;
 const COOLDOWN_SECONDS = 5;
 const MAX_PROMPT_CHARS = 3500;
-const MODEL_NAME = "gemini-1.5-flash-latest";
+const MODEL_NAME = "gemini-2.5-flash-lite";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
 
 type RateLimitRecord = {
