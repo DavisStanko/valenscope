@@ -19,12 +19,88 @@ import { loadFromLocalStorage, saveToLocalStorage, LOCAL_STORAGE_KEY } from "@/l
 import { auth, onAuthStateChanged, signInWithGoogle, signInWithEmail, signUpWithEmail, handleSignOut, handleForgotPassword } from "@/lib/firebase/auth";
 import { loadDataAndStartListener, updateFirebaseData, saveCompleteData } from "@/lib/firebase/database";
 
+// Helper function to generate fresh UUIDs for default data
+function createDefaultData() {
+  return {
+    assets: [
+      {
+        id: crypto.randomUUID(),
+        name: "Stock Portfolio",
+        value: 0.0,
+        roi: 0.07,
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Savings Account",
+        value: 2000.0,
+        roi: 0.01,
+      },
+    ],
+    debts: [
+      {
+        id: crypto.randomUUID(),
+        name: "Credit Card",
+        value: 2000.0,
+        apr: 0.22,
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Car Loan",
+        value: 40000.0,
+        apr: 0.07,
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Mortgage",
+        value: 400000.0,
+        apr: 0.04,
+      },
+    ],
+    income: [
+      {
+        id: crypto.randomUUID(),
+        name: "Salary (Net)",
+        amount: 4000.0,
+        retirementBehavior: "stops",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Side Gig",
+        amount: 200.0,
+        retirementBehavior: "continues",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Rental Property",
+        amount: 1000.0,
+        retirementBehavior: "continues",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Pension",
+        amount: 500.0,
+        retirementBehavior: "starts",
+      },
+    ],
+    expenses: [
+      { id: crypto.randomUUID(), name: "Groceries", amount: 400.0 },
+      { id: crypto.randomUUID(), name: "Lifestyle", amount: 500.0 },
+      { id: crypto.randomUUID(), name: "Utilities", amount: 200.0 },
+      { id: crypto.randomUUID(), name: "Car Insurance", amount: 180.0 },
+    ],
+    retirementYears: 20,
+    surplusAllocations: [],
+    deficitAllocations: [],
+  };
+}
+
+// For type checking and fallback merging
 const DEFAULT_DATA = {
   assets: [],
   debts: [],
   income: [],
   expenses: [],
-  retirementYears: 0,
+  retirementYears: 20,
   surplusAllocations: [],
   deficitAllocations: [],
 };
@@ -160,7 +236,8 @@ export default function Home() {
   }, [renderTableCallback, updateProjection]);
 
   const handleResetData = useCallback(() => {
-    currentDataRef.current = { ...DEFAULT_DATA, assets: [], debts: [], income: [], expenses: [], surplusAllocations: [], deficitAllocations: [], retirementYears: 0 };
+    // Create fresh default data with new UUIDs (matching legacy app behavior)
+    currentDataRef.current = createDefaultData();
     saveToLocalStorage(currentDataRef.current);
     if (currentUserIdRef.current) {
       saveCompleteData(currentUserIdRef.current, currentDataRef.current, {
@@ -169,10 +246,10 @@ export default function Home() {
     }
     ["assets", "debts", "income", "expenses"].forEach(renderTableCallback);
     const retirementInput = document.getElementById("retirement-years-input") as HTMLInputElement;
-    if (retirementInput) retirementInput.value = "0";
+    if (retirementInput) retirementInput.value = String(currentDataRef.current.retirementYears);
     updateProjection();
     hideResetModal();
-    showToast("All data has been reset", "success");
+    showToast("Data has been reset to defaults", "success");
   }, [renderTableCallback, updateProjection]);
 
   useEffect(() => {
@@ -185,6 +262,10 @@ export default function Home() {
     const savedData = loadFromLocalStorage(DEFAULT_DATA);
     if (savedData) {
       currentDataRef.current = savedData;
+    } else {
+      // Fresh user - no saved data, use default demo data
+      currentDataRef.current = createDefaultData();
+      saveToLocalStorage(currentDataRef.current);
     }
 
     ["assets", "debts", "income", "expenses"].forEach(renderTableCallback);
