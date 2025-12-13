@@ -366,7 +366,6 @@ export function updateAIInsightsUI(userId) {
   const insightsEmpty = document.getElementById("ai-insights-empty");
   const insightsError = document.getElementById("ai-insights-error");
   const dailyLimit = document.getElementById("ai-daily-limit");
-  const requestsRemaining = document.getElementById("ai-requests-remaining");
 
   if (!section) return;
 
@@ -436,7 +435,9 @@ export function updateAIInsightsUI(userId) {
 
     const remaining = Math.max(0, AI_CONFIG.DAILY_LIMIT - used);
 
-    if (requestsRemaining) requestsRemaining.textContent = `${remaining}`;
+    // Display "used" count instead of remaining
+    const requestsUsedEl = document.getElementById("ai-requests-used");
+    if (requestsUsedEl) requestsUsedEl.textContent = `${used}`;
     const dailyLimitValueEl = document.getElementById("ai-daily-limit-value");
     if (dailyLimitValueEl) {
       dailyLimitValueEl.textContent = AI_CONFIG.DAILY_LIMIT;
@@ -481,21 +482,36 @@ function startCooldown(userId) {
   cooldownBar.classList.remove("hidden");
   if (generateBtn) generateBtn.disabled = true;
 
+  // Use CSS animation for consistent 5-second duration regardless of screen size
+  if (cooldownProgress) {
+    // Reset by removing the element from DOM and re-adding
+    cooldownProgress.style.width = "100%";
+    cooldownProgress.style.transition = "none";
+    // Force reflow
+    void cooldownProgress.offsetWidth;
+    // Apply the 5-second linear transition
+    cooldownProgress.style.transition = `width ${AI_CONFIG.COOLDOWN_SECONDS}s linear`;
+    cooldownProgress.style.width = "0%";
+  }
+
+  // Update text countdown and handle completion
   const updateCooldown = () => {
     const now = Date.now();
     const remaining = Math.max(0, aiInsightsState.cooldownEndTime - now);
     const secondsLeft = Math.ceil(remaining / 1000);
-    const progressPercent =
-      (remaining / (AI_CONFIG.COOLDOWN_SECONDS * 1000)) * 100;
 
     if (cooldownText) cooldownText.textContent = `${secondsLeft}s`;
-    if (cooldownProgress) cooldownProgress.style.width = `${progressPercent}%`;
 
     if (remaining <= 0) {
       clearInterval(aiInsightsState.cooldownInterval);
       aiInsightsState.cooldownInterval = null;
       aiInsightsState.cooldownEndTime = null;
       cooldownBar.classList.add("hidden");
+      // Reset progress bar for next use
+      if (cooldownProgress) {
+        cooldownProgress.style.transition = "none";
+        cooldownProgress.style.width = "100%";
+      }
       updateAIInsightsUI(userId);
     }
   };
