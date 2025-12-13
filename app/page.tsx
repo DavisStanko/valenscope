@@ -293,17 +293,24 @@ export default function Home() {
       btn.addEventListener("click", () => {
         const period = parseInt((btn as HTMLElement).dataset.period || "12");
         currentTimeRangeMonthsRef.current = period;
-        timeRangeBtns.forEach((b) => b.classList.remove("bg-blue-600", "text-white", "border-blue-600"));
-        btn.classList.add("bg-blue-600", "text-white", "border-blue-600");
+        timeRangeBtns.forEach((b) => {
+          b.classList.remove("bg-blue-600", "dark:bg-blue-600", "text-white", "dark:text-white", "border-blue-600", "dark:border-blue-600", "hover:bg-blue-700", "dark:hover:bg-blue-700");
+          b.classList.add("bg-white", "dark:bg-gray-700", "text-gray-700", "dark:text-gray-300", "hover:bg-gray-50", "dark:hover:bg-gray-600");
+        });
+        btn.classList.remove("bg-white", "dark:bg-gray-700", "text-gray-700", "dark:text-gray-300", "hover:bg-gray-50", "dark:hover:bg-gray-600");
+        btn.classList.add("bg-blue-600", "dark:bg-blue-600", "text-white", "dark:text-white", "border-blue-600", "dark:border-blue-600", "hover:bg-blue-700", "dark:hover:bg-blue-700");
         updateProjection();
       });
     });
 
-    // Set default time range to 30 years
+    // Set default time range to 30 years and trigger chart update
     const defaultBtn = document.querySelector('.time-range-btn[data-period="360"]');
     if (defaultBtn) {
-      defaultBtn.classList.add("bg-blue-600", "text-white", "border-blue-600");
+      defaultBtn.classList.remove("bg-white", "dark:bg-gray-700", "text-gray-700", "dark:text-gray-300", "hover:bg-gray-50", "dark:hover:bg-gray-600");
+      defaultBtn.classList.add("bg-blue-600", "dark:bg-blue-600", "text-white", "dark:text-white", "border-blue-600", "dark:border-blue-600", "hover:bg-blue-700", "dark:hover:bg-blue-700");
     }
+    // Ensure chart is updated after button styling is applied
+    updateProjection();
 
     // Legend toggle
     const legendToggle = document.getElementById("legend-show-all");
