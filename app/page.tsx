@@ -247,6 +247,12 @@ export default function Home() {
     ["assets", "debts", "income", "expenses"].forEach(renderTableCallback);
     const retirementInput = document.getElementById("retirement-years-input") as HTMLInputElement;
     if (retirementInput) retirementInput.value = String(currentDataRef.current.retirementYears);
+    
+    // Ensure allocations are generated before projection
+    renderSurplusAllocations(currentDataRef.current);
+    renderDeficitAllocations(currentDataRef.current);
+    
+    destroyChart();
     updateProjection();
     hideResetModal();
     showToast("Data has been reset to defaults", "success");
