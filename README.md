@@ -2,6 +2,8 @@
 
 Model your net worth over time. Tracks assets, debts, income, and expenses. Plan for retirement, financial independence, and other money milestones. Includes personalized financial insights powered by AI.
 
+![Valenscope screenshot](demo.png)
+
 ## How to use
 
 Add your assets and debts to see your current net worth. Log your income and expenses to project changes over time. Set a goal, like retirement or financial independence, to see when you will reach it based on your current trajectory. View your net worth projection as a chart.
