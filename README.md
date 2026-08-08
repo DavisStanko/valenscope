@@ -2,7 +2,9 @@
 
 Model your net worth over time. Tracks assets, debts, income, and expenses. Plan for retirement, financial independence, and other money milestones. Includes personalized financial insights powered by AI.
 
-![Valenscope screenshot](demo.png)
+<p align="center">
+  <img src="demo.png" alt="Valenscope screenshot" />
+</p>
 
 ## How to use
 
